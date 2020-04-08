@@ -67,4 +67,9 @@ extern int misc_deregister(struct miscdevice *misc);
 #define MODULE_ALIAS_MISCDEV(minor)				\
 	MODULE_ALIAS("char-major-" __stringify(MISC_MAJOR)	\
 	"-" __stringify(minor))
+
+#ifndef VHCI_MINOR
+#define VHCI_MINOR		137
+#endif
+
 #endif
