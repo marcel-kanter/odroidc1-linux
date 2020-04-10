@@ -8,6 +8,8 @@
 #include <asm/current.h>
 #include <uapi/linux/wait.h>
 
+#include <linux/version.h>
+
 typedef struct __wait_queue wait_queue_t;
 typedef int (*wait_queue_func_t)(wait_queue_t *wait, unsigned mode, int flags, void *key);
 int default_wake_function(wait_queue_t *wait, unsigned mode, int flags, void *key);
@@ -959,5 +961,12 @@ static inline int wait_on_bit_lock(void *word, int bit,
 		return 0;
 	return out_of_line_wait_on_bit_lock(word, bit, action, mode);
 }
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,19,0)
+#define WQ_FLAG_WOKEN		0x02
+
+long wait_woken(wait_queue_t *wait, unsigned mode, long timeout);
+int woken_wake_function(wait_queue_t *wait, unsigned mode, int sync, void *key);
+#endif
 	
 #endif

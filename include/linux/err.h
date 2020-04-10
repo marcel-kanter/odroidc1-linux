@@ -62,4 +62,6 @@ static inline int __must_check PTR_RET(const void *ptr)
 
 #endif
 
+#define PTR_ERR_OR_ZERO(p) PTR_RET(p)
+
 #endif /* _LINUX_ERR_H */

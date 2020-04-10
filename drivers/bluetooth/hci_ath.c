@@ -58,7 +58,11 @@ static int ath_wakeup_ar3k(struct tty_struct *tty)
 		return status;
 
 	/* Disable Automatic RTSCTS */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,7,0))
 	ktermios = tty->termios;
+#else
+	memcpy(&ktermios, tty->termios, sizeof(ktermios));
+#endif
 	ktermios.c_cflag &= ~CRTSCTS;
 	tty_set_termios(tty, &ktermios);
 
@@ -74,7 +78,7 @@ static int ath_wakeup_ar3k(struct tty_struct *tty)
 
 	status = tty->driver->ops->tiocmget(tty);
 
-	/* Disable Automatic RTSCTS */
+	/* Enable Automatic RTSCTS */
 	ktermios.c_cflag |= CRTSCTS;
 	status = tty_set_termios(tty, &ktermios);
 

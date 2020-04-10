@@ -164,33 +164,4 @@ struct sk_buff *skb_clone_sk(struct sk_buff *skb)
 }
 EXPORT_SYMBOL_GPL(skb_clone_sk);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,3,0)
-/*
- * skb_complete_wifi_ack() needs to get backported, because the version from
- * 3.18 added the sock_hold() and sock_put() calles missing in older versions.
- */
-void skb_complete_wifi_ack(struct sk_buff *skb, bool acked)
-{
-	struct sock *sk = skb->sk;
-	struct sock_exterr_skb *serr;
-	int err;
 
-	skb->wifi_acked_valid = 1;
-	skb->wifi_acked = acked;
-
-	serr = SKB_EXT_ERR(skb);
-	memset(serr, 0, sizeof(*serr));
-	serr->ee.ee_errno = ENOMSG;
-	serr->ee.ee_origin = SO_EE_ORIGIN_TXSTATUS;
-
-	/* take a reference to prevent skb_orphan() from freeing the socket */
-	sock_hold(sk);
-
-	err = sock_queue_err_skb(sk, skb);
-	if (err)
-		kfree_skb(skb);
-
-	sock_put(sk);
-}
-EXPORT_SYMBOL_GPL(skb_complete_wifi_ack);
-#endif
